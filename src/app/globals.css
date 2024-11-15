@@ -34,6 +34,7 @@
 
     --radius: 0.5rem;
   }
+
 }
 
 @layer base {
@@ -45,5 +46,17 @@
   }
   body {
     @apply h-full bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Para navegadores WebKit (Chrome, Safari, Edge) */
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Para Firefox */
+  .scrollbar-hidden {
+    scrollbar-width: none;
   }
 }

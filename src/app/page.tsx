@@ -1,13 +1,17 @@
+import { BarbershopItem } from '@/components/barbershop-item'
 import { Header } from '@/components/header'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { prisma } from '@/lib/prisma'
 import { Search } from 'lucide-react'
 import Image from 'next/image'
 
-export default function Home() {
+const Home = async () => {
+  const babershops = await prisma.barbershop.findMany({})
+
   return (
     <>
       <Header />
@@ -31,7 +35,11 @@ export default function Home() {
           />
         </div>
 
-        <Card className="mt-6">
+        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
+          Agendamentos
+        </h2>
+
+        <Card>
           <CardContent className="flex justify-between p-0">
             <div className="flex flex-col gap-2 py-5 pl-5">
               <Badge className="w-fit">Confirmado</Badge>
@@ -50,7 +58,21 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
+
+        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
+          Recomendados
+        </h2>
+
+        <div className="scrollbar-hidden flex gap-4 overflow-auto">
+          {babershops.map(barbershop => {
+            return (
+              <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+            )
+          })}
+        </div>
       </div>
     </>
   )
 }
+
+export default Home
