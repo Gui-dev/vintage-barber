@@ -1,11 +1,15 @@
 import { BarbershopItem } from '@/components/barbershop-item'
+import { BookingItem } from '@/components/booking-item'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
+import { QuickSearch } from '@/components/quick-search'
+import { Subtitle } from '@/components/subtitle'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { quickSearchOptions } from '@/constants/quick-search'
 import { prisma } from '@/lib/prisma'
 import { Search } from 'lucide-react'
 import Image from 'next/image'
@@ -32,6 +36,12 @@ const Home = async () => {
           </Button>
         </div>
 
+        <div className="scrollbar-hidden mt-6 flex gap-3 overflow-auto">
+          {quickSearchOptions.map(option => {
+            return <QuickSearch option={option} key={option.title} />
+          })}
+        </div>
+
         <div className="relative mt-6 h-[150px] w-full">
           <Image
             src="/banner-01.png"
@@ -41,33 +51,11 @@ const Home = async () => {
           />
         </div>
 
-        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
-          Agendamentos
-        </h2>
+        <Subtitle>Agendamentos</Subtitle>
 
-        <Card>
-          <CardContent className="flex justify-between p-0">
-            <div className="flex flex-col gap-2 py-5 pl-5">
-              <Badge className="w-fit">Confirmado</Badge>
-              <h3 className="font-semibold">Corte de cabelo</h3>
-              <div className="flex items-center">
-                <Avatar className="size-6">
-                  <AvatarImage src="https://github.com/Gui-dev.png" />
-                </Avatar>
-                <p className="text-sm">Your Barber Here</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
-              <p className="text-sm">Novembro</p>
-              <p className="text-2xl">15</p>
-              <p className="text-sm">20:00</p>
-            </div>
-          </CardContent>
-        </Card>
+        <BookingItem />
 
-        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
-          Recomendados
-        </h2>
+        <Subtitle>Recomendados</Subtitle>
 
         <div className="scrollbar-hidden flex gap-4 overflow-auto">
           {babershops.map(barbershop => {
@@ -77,9 +65,7 @@ const Home = async () => {
           })}
         </div>
 
-        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
-          Populares
-        </h2>
+        <Subtitle>Populares</Subtitle>
 
         <div className="scrollbar-hidden flex gap-4 overflow-auto">
           {popularBabershops.map(barbershop => {
@@ -89,6 +75,7 @@ const Home = async () => {
           })}
         </div>
       </div>
+
       <Footer />
     </>
   )
