@@ -32,7 +32,12 @@ export const BarbershopItem = ({ barbershop }: IBarberShopProps) => {
           <h3 className="truncate font-semibold" title={barbershop.name}>
             {barbershop.name}
           </h3>
-          <p className="truncate text-gray-400 text-sm">{barbershop.address}</p>
+          <p
+            className="truncate text-gray-400 text-sm"
+            title={barbershop.address}
+          >
+            {barbershop.address}
+          </p>
           <Button variant="secondary" className="mt-3 w-full">
             Reservar
           </Button>

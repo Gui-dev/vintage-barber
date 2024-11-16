@@ -1,4 +1,5 @@
 import { BarbershopItem } from '@/components/barbershop-item'
+import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -11,6 +12,11 @@ import Image from 'next/image'
 
 const Home = async () => {
   const babershops = await prisma.barbershop.findMany({})
+  const popularBabershops = await prisma.barbershop.findMany({
+    orderBy: {
+      name: 'desc',
+    },
+  })
 
   return (
     <>
@@ -70,7 +76,20 @@ const Home = async () => {
             )
           })}
         </div>
+
+        <h2 className="mt-6 mb-2 font-bold text-gray-400 text-xs uppercase">
+          Populares
+        </h2>
+
+        <div className="scrollbar-hidden flex gap-4 overflow-auto">
+          {popularBabershops.map(barbershop => {
+            return (
+              <BarbershopItem key={barbershop.id} barbershop={barbershop} />
+            )
+          })}
+        </div>
       </div>
+      <Footer />
     </>
   )
 }
