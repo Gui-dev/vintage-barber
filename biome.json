@@ -40,6 +40,11 @@
           "level": "error",
           "fix": "safe"
         }
+      },
+      "correctness": {
+        "noUnusedImports": {
+          "level": "warn"
+        }
       }
     }
   },
