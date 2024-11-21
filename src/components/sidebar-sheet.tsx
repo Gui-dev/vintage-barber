@@ -1,9 +1,17 @@
 import { quickSearchOptions } from '@/constants/quick-search'
-import { CalendarIcon, DoorClosedIcon, HomeIcon } from 'lucide-react'
+import { CalendarIcon, DoorClosedIcon, HomeIcon, LogInIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Avatar, AvatarImage } from './ui/avatar'
+// import {} from './ui/avatar'
 import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
 
 export const SidebarSheet = () => {
@@ -14,13 +22,38 @@ export const SidebarSheet = () => {
       </SheetHeader>
 
       <div className="flex items-center gap-3 border-b border-solid py-5">
-        <Avatar>
+        <h2 className="font-bold">Olá, faça seu login</h2>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <LogInIcon />
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent className="w-[90%] rounded-md">
+            <DialogHeader>
+              <DialogTitle>Faça login na plataforma</DialogTitle>
+              <DialogDescription>Conecte-se com o Google</DialogDescription>
+            </DialogHeader>
+
+            <Button variant="secondary" className="gap-1 font-bold">
+              <Image
+                src="/google.svg"
+                alt="Google Logo"
+                height={18}
+                width={18}
+              />
+              Google
+            </Button>
+          </DialogContent>
+        </Dialog>
+        {/* <Avatar>
           <AvatarImage src="https://github.com/Gui-dev.png" />
         </Avatar>
         <div className="flex flex-col">
           <h2 className="font-base font-bold">Bruce Wayne</h2>
           <p className="text-xs">bruce@email.com</p>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-2 border-b border-solid py-5">
