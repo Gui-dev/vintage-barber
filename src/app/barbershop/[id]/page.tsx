@@ -1,7 +1,9 @@
 import { BarbershopServiceItem } from '@/components/barbershop-service-item'
 import { PhoneItem } from '@/components/phone-item'
+import { SidebarSheet } from '@/components/sidebar-sheet'
 import { Subtitle } from '@/components/subtitle'
 import { Button } from '@/components/ui/button'
+import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import { prisma } from '@/lib/prisma'
 import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -49,13 +51,19 @@ const Barbershop = async ({ params }: IBarbershopProps) => {
           </Link>
         </Button>
 
-        <Button
-          size="icon"
-          variant="secondary"
-          className="absolute top-4 right-4"
-        >
-          <MenuIcon />
-        </Button>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="absolute top-4 right-4"
+            >
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+
+          <SidebarSheet />
+        </Sheet>
       </div>
 
       <div className="flex flex-col border-b border-solid p-5">
