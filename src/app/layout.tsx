@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Footer } from '@/components/footer'
 import { Toaster } from '@/components/ui/sonner'
+import { SessionProvider } from '@/providers/session-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} antialiased`}>
-        {children}
-        <Toaster position="top-right" theme="dark" />
-        <Footer />
+        <SessionProvider>
+          {children}
+          <Toaster position="top-right" theme="dark" />
+          <Footer />
+        </SessionProvider>
       </body>
     </html>
   )

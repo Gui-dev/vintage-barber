@@ -1,7 +1,11 @@
+'use client'
+
 import { quickSearchOptions } from '@/constants/quick-search'
 import { CalendarIcon, DoorClosedIcon, HomeIcon, LogInIcon } from 'lucide-react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Avatar, AvatarImage } from './ui/avatar'
 // import {} from './ui/avatar'
 import { Button } from './ui/button'
 import {
@@ -15,6 +19,20 @@ import {
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
 
 export const SidebarSheet = () => {
+  const { data, status } = useSession()
+
+  const handleGoogleLogin = async () => {
+    await signIn('google')
+  }
+
+  const handleLogout = async () => {
+    await signOut()
+  }
+
+  if (status === 'loading') {
+    return
+  }
+
   return (
     <SheetContent className="scrollbar-hidden overflow-y-auto">
       <SheetHeader>
@@ -22,38 +40,51 @@ export const SidebarSheet = () => {
       </SheetHeader>
 
       <div className="flex items-center gap-3 border-b border-solid py-5">
-        <h2 className="font-bold">Olá, faça seu login</h2>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <LogInIcon />
-            </Button>
-          </DialogTrigger>
+        {status === 'unauthenticated' && (
+          <>
+            <h2 className="font-bold">Olá, faça seu login</h2>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <LogInIcon />
+                </Button>
+              </DialogTrigger>
 
-          <DialogContent className="w-[90%] rounded-md">
-            <DialogHeader>
-              <DialogTitle>Faça login na plataforma</DialogTitle>
-              <DialogDescription>Conecte-se com o Google</DialogDescription>
-            </DialogHeader>
+              <DialogContent className="w-[90%] rounded-md">
+                <DialogHeader>
+                  <DialogTitle>Faça login na plataforma</DialogTitle>
+                  <DialogDescription>Conecte-se com o Google</DialogDescription>
+                </DialogHeader>
 
-            <Button variant="secondary" className="gap-1 font-bold">
-              <Image
-                src="/google.svg"
-                alt="Google Logo"
-                height={18}
-                width={18}
-              />
-              Google
-            </Button>
-          </DialogContent>
-        </Dialog>
-        {/* <Avatar>
-          <AvatarImage src="https://github.com/Gui-dev.png" />
-        </Avatar>
-        <div className="flex flex-col">
-          <h2 className="font-base font-bold">Bruce Wayne</h2>
-          <p className="text-xs">bruce@email.com</p>
-        </div> */}
+                <Button
+                  variant="secondary"
+                  className="gap-1 font-bold"
+                  onClick={handleGoogleLogin}
+                >
+                  <Image
+                    src="/google.svg"
+                    alt="Google Logo"
+                    height={18}
+                    width={18}
+                  />
+                  Google
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+
+        {status === 'authenticated' && (
+          <>
+            <Avatar>
+              <AvatarImage src={data.user?.image ?? ''} />
+            </Avatar>
+            <div className="flex flex-col">
+              <h2 className="font-base font-bold">{data.user?.name}</h2>
+              <p className="text-xs">{data.user?.email}</p>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 border-b border-solid py-5">
@@ -80,7 +111,10 @@ export const SidebarSheet = () => {
           return (
             <SheetClose key={option.title} asChild>
               <Button className="justify-start gap-2" variant="ghost" asChild>
-                <Link href={`/search?s=${option.title}`} title={option.title}>
+                <Link
+                  href={`/barbershop?search=${option.title}`}
+                  title={option.title}
+                >
                   <Image
                     src={option.imageUrl}
                     alt={option.title}
@@ -97,7 +131,11 @@ export const SidebarSheet = () => {
       </div>
 
       <div className="flex flex-col gap-2 py-5">
-        <Button className="justify-start gap-2" variant="ghost">
+        <Button
+          className="justify-start gap-2"
+          variant="ghost"
+          onClick={handleLogout}
+        >
           <DoorClosedIcon size={18} />
           Sair do app
         </Button>
