@@ -21,10 +21,12 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} antialiased`}>
         <SessionProvider>
-          {children}
-          <Toaster position="top-right" theme="dark" />
-          <Footer />
+          <div className="flex h-full flex-col">
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </div>
         </SessionProvider>
+        <Toaster position="top-right" theme="dark" />
       </body>
     </html>
   )

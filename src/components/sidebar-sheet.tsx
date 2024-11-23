@@ -6,7 +6,6 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Avatar, AvatarImage } from './ui/avatar'
-// import {} from './ui/avatar'
 import { Button } from './ui/button'
 import {
   Dialog,
