@@ -111,7 +111,7 @@ export const SidebarSheet = () => {
             <SheetClose key={option.title} asChild>
               <Button className="justify-start gap-2" variant="ghost" asChild>
                 <Link
-                  href={`/barbershop?search=${option.title}`}
+                  href={`/barbershop?services=${option.title}`}
                   title={option.title}
                 >
                   <Image

@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <SessionProvider>
           <div className="flex h-full flex-col">
-            <div className="flex-1">{children}</div>
+            <div className="flex-1 pb-4">{children}</div>
             <Footer />
           </div>
         </SessionProvider>

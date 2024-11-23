@@ -25,7 +25,7 @@ export const Search = () => {
   })
 
   const handleSearchSubmit = ({ search }: SearchSchemaData) => {
-    route.push(`/barbershop?search=${search}`)
+    route.push(`/barbershop?title=${search}`)
   }
 
   return (
