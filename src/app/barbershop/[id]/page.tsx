@@ -86,7 +86,13 @@ const Barbershop = async ({ params }: IBarbershopProps) => {
       <div className="flex flex-col space-y-3 border-b border-solid p-5">
         <Subtitle>Serviços</Subtitle>
         {barbershop.services.map(service => {
-          return <BarbershopServiceItem key={service.id} service={service} />
+          return (
+            <BarbershopServiceItem
+              key={service.id}
+              service={service}
+              barbershop={barbershop}
+            />
+          )
         })}
       </div>
 
