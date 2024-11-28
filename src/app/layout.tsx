@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Footer } from '@/components/footer'
 import { Toaster } from '@/components/ui/sonner'
-import { SessionProvider } from '@/providers/session-provider'
+import { Providers } from '@/providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,12 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} antialiased`}>
-        <SessionProvider>
+        <Providers>
           <div className="flex h-full flex-col">
             <div className="flex-1 pb-4">{children}</div>
             <Footer />
           </div>
-        </SessionProvider>
+        </Providers>
         <Toaster position="top-right" theme="dark" />
       </body>
     </html>

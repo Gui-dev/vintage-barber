@@ -1,14 +1,15 @@
 'use client'
 
 import { createBooking } from '@/app/actions/create-booking'
-import { TIME_LIST } from '@/constants/time-list'
+import { getBookings } from '@/app/actions/get-bookings'
 import { formatCurrency } from '@/lib/format-currency'
-import type { Barbershop, BarbershopService } from '@prisma/client'
+import { getTimeList } from '@/lib/get-time-list'
+import type { Barbershop, BarbershopService, Booking } from '@prisma/client'
 import { format, set } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
 import { Calendar } from './ui/calendar'
@@ -33,11 +34,24 @@ export const BarbershopServiceItem = ({
   barbershop,
 }: IBarbershopItemProps) => {
   const { data } = useSession()
+  const [dayBooking, setDayBooking] = useState<Booking[]>([])
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
   const [selectedHour, setSelectedHour] = useState<string | undefined>(
     undefined,
   )
   const price = formatCurrency(Number(service.price))
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (!selectedDay) return
+      const bookings = await getBookings({
+        serviceId: service.id,
+        date: selectedDay,
+      })
+      setDayBooking(bookings)
+    }
+    fetch()
+  }, [selectedDay, service.id])
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDay(date)
@@ -138,7 +152,7 @@ export const BarbershopServiceItem = ({
 
                 {selectedDay && (
                   <div className="scrollbar-hidden flex items-center gap-3 overflow-y-auto border-b border-solid p-5">
-                    {TIME_LIST.map(time => {
+                    {getTimeList(dayBooking).map(time => {
                       return (
                         <Button
                           key={time}

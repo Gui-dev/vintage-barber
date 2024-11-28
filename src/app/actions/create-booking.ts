@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
 interface ICreateBookingProps {
   userId: string
@@ -20,4 +21,5 @@ export const createBooking = async ({
       date,
     },
   })
+  revalidatePath('/barbershop/[id]')
 }
