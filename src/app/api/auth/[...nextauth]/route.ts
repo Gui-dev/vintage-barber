@@ -16,7 +16,7 @@ const handler = NextAuth({
     async session({ session, user }) {
       session.user = {
         ...session.user,
-        // id: user.id,
+        id: user.id,
       }
 
       return session
