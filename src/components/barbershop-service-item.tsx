@@ -4,12 +4,14 @@ import { createBooking } from '@/app/actions/create-booking'
 import { getBookings } from '@/app/actions/get-bookings'
 import { formatCurrency } from '@/lib/format-currency'
 import { getTimeList } from '@/lib/get-time-list'
-import type { Barbershop, BarbershopService, Booking } from '@prisma/client'
+import { queryClient } from '@/lib/query-client'
+import type { Barbershop, BarbershopService } from '@prisma/client'
+import { useQuery } from '@tanstack/react-query'
 import { format, set } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from './ui/button'
 import { Calendar } from './ui/calendar'
@@ -34,24 +36,20 @@ export const BarbershopServiceItem = ({
   barbershop,
 }: IBarbershopItemProps) => {
   const { data } = useSession()
-  const [dayBooking, setDayBooking] = useState<Booking[]>([])
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
   const [selectedHour, setSelectedHour] = useState<string | undefined>(
     undefined,
   )
   const price = formatCurrency(Number(service.price))
-
-  useEffect(() => {
-    const fetch = async () => {
-      if (!selectedDay) return
-      const bookings = await getBookings({
+  const query = useQuery({
+    queryKey: ['get-bookings', service.id, selectedDay],
+    queryFn: () =>
+      getBookings({
         serviceId: service.id,
-        date: selectedDay,
-      })
-      setDayBooking(bookings)
-    }
-    fetch()
-  }, [selectedDay, service.id])
+        date: selectedDay ?? new Date(),
+      }),
+    enabled: !!selectedDay,
+  })
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDay(date)
@@ -82,6 +80,9 @@ export const BarbershopServiceItem = ({
         serviceId: service.id,
         date,
       })
+      queryClient.invalidateQueries({ queryKey: ['get-bookings'] })
+      setSelectedDay(undefined)
+      setSelectedHour(undefined)
       toast.success('Reserva criada com sucesso')
     } catch (error) {
       console.log('ERROR: ', error)
@@ -123,6 +124,7 @@ export const BarbershopServiceItem = ({
                     selected={selectedDay}
                     onSelect={handleDateSelect}
                     mode="single"
+                    fromDate={new Date()}
                     locale={ptBR}
                     styles={{
                       head_cell: {
@@ -150,9 +152,9 @@ export const BarbershopServiceItem = ({
                   />
                 </div>
 
-                {selectedDay && (
+                {selectedDay && query.data && (
                   <div className="scrollbar-hidden flex items-center gap-3 overflow-y-auto border-b border-solid p-5">
-                    {getTimeList(dayBooking).map(time => {
+                    {getTimeList(query.data).map(time => {
                       return (
                         <Button
                           key={time}
