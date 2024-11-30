@@ -101,16 +101,18 @@ export const SidebarSheet = () => {
         })}
       </div>
 
-      <div className="flex flex-col gap-2 py-5">
-        <Button
-          className="justify-start gap-2"
-          variant="ghost"
-          onClick={handleLogout}
-        >
-          <DoorClosedIcon size={18} />
-          Sair do app
-        </Button>
-      </div>
+      {status === 'authenticated' && (
+        <div className="flex flex-col gap-2 py-5">
+          <Button
+            className="justify-start gap-2"
+            variant="ghost"
+            onClick={handleLogout}
+          >
+            <DoorClosedIcon size={18} />
+            Sair do app
+          </Button>
+        </div>
+      )}
     </SheetContent>
   )
 }
