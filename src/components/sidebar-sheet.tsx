@@ -2,27 +2,17 @@
 
 import { quickSearchOptions } from '@/constants/quick-search'
 import { CalendarIcon, DoorClosedIcon, HomeIcon, LogInIcon } from 'lucide-react'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { SignInDialog } from './sign-in-dialog'
 import { Avatar, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './ui/dialog'
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { SheetClose, SheetContent, SheetHeader, SheetTitle } from './ui/sheet'
 
 export const SidebarSheet = () => {
   const { data, status } = useSession()
-
-  const handleGoogleLogin = async () => {
-    await signIn('google')
-  }
 
   const handleLogout = async () => {
     await signOut()
@@ -48,26 +38,8 @@ export const SidebarSheet = () => {
                   <LogInIcon />
                 </Button>
               </DialogTrigger>
-
               <DialogContent className="w-[90%] rounded-md">
-                <DialogHeader>
-                  <DialogTitle>Faça login na plataforma</DialogTitle>
-                  <DialogDescription>Conecte-se com o Google</DialogDescription>
-                </DialogHeader>
-
-                <Button
-                  variant="secondary"
-                  className="gap-1 font-bold"
-                  onClick={handleGoogleLogin}
-                >
-                  <Image
-                    src="/google.svg"
-                    alt="Google Logo"
-                    height={18}
-                    width={18}
-                  />
-                  Google
-                </Button>
+                <SignInDialog />
               </DialogContent>
             </Dialog>
           </>
