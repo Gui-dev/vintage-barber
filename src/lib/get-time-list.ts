@@ -1,6 +1,7 @@
 import { TIME_LIST } from '@/constants/time-list'
 import type { Booking } from '@prisma/client'
 
+// TODO: Não exibir horarios no passado
 export const getTimeList = (bookings: Booking[]) => {
   const timeList = TIME_LIST.filter(time => {
     const hours = Number(time.split(':')[0])

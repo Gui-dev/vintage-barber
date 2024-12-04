@@ -75,7 +75,6 @@ export const BarbershopServiceItem = ({
         hours,
       })
       await createBooking({
-        userId: 'cm3se9joi0000eokgbko6efrs',
         serviceId: service.id,
         date,
       })

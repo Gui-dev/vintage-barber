@@ -5,16 +5,39 @@ import { QuickSearch } from '@/components/quick-search'
 import { Search } from '@/components/search'
 import { Subtitle } from '@/components/subtitle'
 import { quickSearchOptions } from '@/constants/quick-search'
+import { authOptions } from '@/lib/auth-options'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth'
 import Image from 'next/image'
 
 const Home = async () => {
+  const data = await getServerSession(authOptions)
   const babershops = await prisma.barbershop.findMany({})
   const popularBabershops = await prisma.barbershop.findMany({
     orderBy: {
       name: 'desc',
     },
   })
+  const bookings = data?.user
+    ? await prisma.booking.findMany({
+        where: {
+          userId: data.user.id,
+          date: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          service: {
+            include: {
+              barbershop: true,
+            },
+          },
+        },
+        orderBy: {
+          date: 'asc',
+        },
+      })
+    : []
 
   return (
     <>
@@ -42,9 +65,17 @@ const Home = async () => {
           />
         </div>
 
-        <Subtitle>Agendamentos</Subtitle>
+        {bookings.length > 0 && (
+          <>
+            <Subtitle>Agendamentos</Subtitle>
 
-        <BookingItem />
+            <div className="scrollbar-hidden flex gap-4 overflow-x-auto">
+              {bookings.map(booking => {
+                return <BookingItem key={booking.id} booking={booking} />
+              })}
+            </div>
+          </>
+        )}
 
         <Subtitle>Recomendados</Subtitle>
 

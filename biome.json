@@ -45,6 +45,9 @@
         "noUnusedImports": {
           "level": "warn"
         }
+      },
+      "style": {
+        "noNonNullAssertion": "off"
       }
     }
   },
