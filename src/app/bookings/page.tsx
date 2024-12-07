@@ -16,7 +16,7 @@ const Bookings = async () => {
     })
   }
 
-  const [condirmedBookings, concluedBookings] = await Promise.all([
+  const [confirmedBookings, concluedBookings] = await Promise.all([
     prisma.booking.findMany({
       where: {
         date: {
@@ -59,7 +59,7 @@ const Bookings = async () => {
       <div className="p-5">
         <Subtitle>Agendamentos</Subtitle>
 
-        {condirmedBookings.length < 1 && concluedBookings.length < 1 && (
+        {confirmedBookings.length < 1 && concluedBookings.length < 1 && (
           <div className="mt-6 flex flex-col gap-3">
             <p className="text-gray-400 text-lg">
               Ainda não foram realizados nenhum agendamento
@@ -69,7 +69,7 @@ const Bookings = async () => {
 
         <div className="mt-6 flex flex-col gap-3">
           <Subtitle>Confirmados</Subtitle>
-          {condirmedBookings.map(booking => {
+          {confirmedBookings.map(booking => {
             return <BookingItem key={booking.id} booking={booking} />
           })}
         </div>

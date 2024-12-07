@@ -32,4 +32,5 @@ export const createBooking = async ({
     },
   })
   revalidatePath('/barbershop/[id]')
+  revalidatePath('/bookings')
 }

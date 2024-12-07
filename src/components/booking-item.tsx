@@ -1,15 +1,35 @@
+'use client'
+
+import { cancelBooking } from '@/app/actions/cancel-booking'
 import { formatCurrency } from '@/lib/format-currency'
 import type { Prisma } from '@prisma/client'
 import { format, isFuture } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { useSession } from 'next-auth/react'
 import Image from 'next/image'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import { PhoneItem } from './phone-item'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog'
 import { Avatar, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
+import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -28,6 +48,8 @@ interface IBookingItemProps {
 }
 
 export const BookingItem = ({ booking }: IBookingItemProps) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data } = useSession()
   const isConfirmed = isFuture(booking?.date!)
   const month = format(booking?.date!, 'MMMM', { locale: ptBR })
   const day = format(booking?.date!, 'dd', { locale: ptBR })
@@ -37,8 +59,26 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
     locale: ptBR,
   })
 
+  const handleCancelBooking = async () => {
+    try {
+      await cancelBooking({
+        userId: data?.user.id,
+        bookingId: booking?.id!,
+      })
+      setIsMenuOpen(false)
+      toast.info('Reserva cancelada com sucesso')
+    } catch (error) {
+      console.log(error)
+      toast.error('Erro ao tentar cancelar a reserva. Tente novamente!')
+    }
+  }
+
+  const handleOpenMenu = (isOpen: boolean) => {
+    setIsMenuOpen(isOpen)
+  }
+
   return (
-    <Sheet>
+    <Sheet open={isMenuOpen} onOpenChange={handleOpenMenu}>
       <SheetTrigger className="w-full cursor-pointer" asChild>
         <Card className="min-w-full">
           <CardContent className="flex justify-between p-0">
@@ -134,6 +174,50 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
             return <PhoneItem key={String(index)} phone={phone} />
           })}
         </div>
+
+        <SheetFooter className="mt-6">
+          <div className="flex items-center justify-center gap-3">
+            <SheetClose asChild>
+              <Button variant="outline" className="w-full">
+                Voltar
+              </Button>
+            </SheetClose>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  disabled={!isConfirmed}
+                >
+                  Cancelar reserva
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="w-[90%]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Você quer mesmo cancelar sua reserva ?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja realizar o cancelamento ? Essa ação é
+                    irreversível.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex flex-row items-center justify-center gap-3">
+                  <AlertDialogCancel className="m-0 w-full appearance-none">
+                    Não
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="m-0 w-full appearance-none bg-red-400 hover:bg-red-500"
+                    onClick={handleCancelBooking}
+                  >
+                    Sim
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   )
