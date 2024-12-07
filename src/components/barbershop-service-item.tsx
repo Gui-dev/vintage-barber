@@ -12,7 +12,7 @@ import { ptBR } from 'date-fns/locale'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { SignInDialog } from './sign-in-dialog'
 import { Button } from './ui/button'
@@ -53,6 +53,17 @@ export const BarbershopServiceItem = ({
       }),
     enabled: !!selectedDay,
   })
+
+  const timeList = useMemo(() => {
+    if (!selectedDay) {
+      return []
+    }
+
+    return getTimeList({
+      bookings: query.data ?? [],
+      selectedDay,
+    })
+  }, [query.data, selectedDay])
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDay(date)
@@ -169,7 +180,7 @@ export const BarbershopServiceItem = ({
 
                   {selectedDay && query.data && (
                     <div className="scrollbar-hidden flex items-center gap-3 overflow-y-auto border-b border-solid p-5">
-                      {getTimeList(query.data).map(time => {
+                      {timeList.map(time => {
                         return (
                           <Button
                             key={time}
@@ -183,6 +194,11 @@ export const BarbershopServiceItem = ({
                           </Button>
                         )
                       })}
+                      {timeList.length < 1 && (
+                        <p className="text-xs">
+                          Não há horários disponíveis para este dia
+                        </p>
+                      )}
                     </div>
                   )}
                   {selectedHour && selectedDay && (
