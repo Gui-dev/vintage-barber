@@ -7,6 +7,8 @@ import { Subtitle } from '@/components/subtitle'
 import { quickSearchOptions } from '@/constants/quick-search'
 import { authOptions } from '@/lib/auth-options'
 import { prisma } from '@/lib/prisma'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { getServerSession } from 'next-auth'
 import Image from 'next/image'
 
@@ -38,13 +40,21 @@ const Home = async () => {
         },
       })
     : []
+  const today = format(new Date(), "EEEE', 'dd' de 'MMMM", {
+    locale: ptBR,
+  })
 
   return (
     <>
       <Header />
       <div className="p-5">
-        <h2 className="font-bold text-xl">Olá, Bruce Wayne</h2>
-        <p>Quinta-feira, 14 de novembro</p>
+        <h2 className="font-bold text-xl">
+          Olá,{' '}
+          <span className="capitalize">
+            {data?.user ? data?.user.name : 'bem vindo'}
+          </span>
+        </h2>
+        <p>{today}</p>
 
         <div className="mt-6">
           <Search />
