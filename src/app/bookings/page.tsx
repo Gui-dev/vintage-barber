@@ -70,14 +70,24 @@ const Bookings = async () => {
         <div className="mt-6 flex flex-col gap-3">
           <Subtitle>Confirmados</Subtitle>
           {confirmedBookings.map(booking => {
-            return <BookingItem key={booking.id} booking={booking} />
+            return (
+              <BookingItem
+                key={booking.id}
+                booking={JSON.parse(JSON.stringify(booking))}
+              />
+            )
           })}
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
           <Subtitle>Finalizados</Subtitle>
           {concluedBookings.map(booking => {
-            return <BookingItem key={booking.id} booking={booking} />
+            return (
+              <BookingItem
+                key={booking.id}
+                booking={JSON.parse(JSON.stringify(booking))}
+              />
+            )
           })}
         </div>
       </div>

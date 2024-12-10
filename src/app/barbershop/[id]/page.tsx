@@ -89,7 +89,7 @@ const Barbershop = async ({ params }: IBarbershopProps) => {
           return (
             <BarbershopServiceItem
               key={service.id}
-              service={service}
+              service={JSON.parse(JSON.stringify(service))}
               barbershop={barbershop}
             />
           )
