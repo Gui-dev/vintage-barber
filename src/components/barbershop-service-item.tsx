@@ -7,13 +7,14 @@ import { getTimeList } from '@/lib/get-time-list'
 import { queryClient } from '@/lib/query-client'
 import type { Barbershop, BarbershopService } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { format, set } from 'date-fns'
+import { set } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { BookingSummary } from './booking-summary'
 import { SignInDialog } from './sign-in-dialog'
 import { Button } from './ui/button'
 import { Calendar } from './ui/calendar'
@@ -65,6 +66,15 @@ export const BarbershopServiceItem = ({
     })
   }, [query.data, selectedDay])
 
+  const selectedDate = useMemo(() => {
+    if (!selectedDay || !selectedHour) return
+
+    return set(selectedDay, {
+      hours: Number(selectedHour.split(':')[0]),
+      minutes: Number(selectedHour.split(':')[1]),
+    })
+  }, [selectedDay, selectedHour])
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDay(date)
   }
@@ -75,19 +85,14 @@ export const BarbershopServiceItem = ({
 
   const handleCreateBooking = async () => {
     try {
-      if (!selectedHour || !selectedDay) {
+      if (!selectedDate) {
         toast.error('Selecione uma data e um horário')
         return
       }
-      const minutes = Number(selectedHour.split(':')[1])
-      const hours = Number(selectedHour.split(':')[0])
-      const date = set(selectedDay, {
-        minutes,
-        hours,
-      })
+
       await createBooking({
         serviceId: service.id,
-        date,
+        date: selectedDate,
       })
       queryClient.invalidateQueries({ queryKey: ['get-bookings'] })
       setSelectedDay(undefined)
@@ -201,35 +206,13 @@ export const BarbershopServiceItem = ({
                       )}
                     </div>
                   )}
-                  {selectedHour && selectedDay && (
+                  {selectedDate && (
                     <div className="p-5">
-                      <Card>
-                        <CardContent className="space-y-3 p-3">
-                          <div className="flex items-center justify-between">
-                            <h2 className="font-bold">{service.name}</h2>
-                            <p className="font-bold text-sm">{price}</p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-gray-400 text-sm">Data</h2>
-                            <p className="text-sm">
-                              {format(selectedDay, "d' de 'MMMM", {
-                                locale: ptBR,
-                              })}
-                            </p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-gray-400 text-sm">Horário</h2>
-                            <p className="text-sm">{selectedHour}h</p>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <h2 className="text-gray-400 text-sm">Barbearia</h2>
-                            <p className="text-sm">{barbershop.name}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <BookingSummary
+                        barbershop={barbershop}
+                        service={service}
+                        selectedDay={selectedDate}
+                      />
                     </div>
                   )}
 

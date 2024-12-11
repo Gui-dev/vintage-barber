@@ -1,7 +1,6 @@
 'use client'
 
 import { cancelBooking } from '@/app/actions/cancel-booking'
-import { formatCurrency } from '@/lib/format-currency'
 import type { Prisma } from '@prisma/client'
 import { format, isFuture } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -9,6 +8,7 @@ import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { BookingSummary } from './booking-summary'
 import { PhoneItem } from './phone-item'
 import {
   AlertDialog,
@@ -36,7 +36,7 @@ import {
 } from './ui/sheet'
 
 interface IBookingItemProps {
-  booking?: Prisma.BookingGetPayload<{
+  booking: Prisma.BookingGetPayload<{
     include: {
       service: {
         include: {
@@ -48,22 +48,22 @@ interface IBookingItemProps {
 }
 
 export const BookingItem = ({ booking }: IBookingItemProps) => {
+  if (!booking) {
+    return <p>Carregando...</p>
+  }
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { data } = useSession()
-  const isConfirmed = isFuture(booking?.date!)
-  const month = format(booking?.date!, 'MMMM', { locale: ptBR })
-  const day = format(booking?.date!, 'dd', { locale: ptBR })
-  const hour = format(booking?.date!, 'HH:mm', { locale: ptBR })
-  const price = formatCurrency(Number(booking?.service.price))
-  const formattedDay = format(booking?.date!, "d' de 'MMMM", {
-    locale: ptBR,
-  })
+  const isConfirmed = isFuture(booking.date)
+  const month = format(booking.date, 'MMMM', { locale: ptBR })
+  const day = format(booking.date, 'dd', { locale: ptBR })
+  const hour = format(booking.date, 'HH:mm', { locale: ptBR })
 
   const handleCancelBooking = async () => {
     try {
       await cancelBooking({
         userId: data?.user.id,
-        bookingId: booking?.id!,
+        bookingId: booking.id,
       })
       setIsMenuOpen(false)
       toast.info('Reserva cancelada com sucesso')
@@ -89,12 +89,12 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
               >
                 {isConfirmed ? 'Confirmado' : 'Finalizado'}
               </Badge>
-              <h3 className="font-semibold">{booking?.service.name}</h3>
+              <h3 className="font-semibold">{booking.service.name}</h3>
               <div className="flex items-center">
                 <Avatar className="size-6">
-                  <AvatarImage src={booking?.service.imageUrl} />
+                  <AvatarImage src={booking.service.imageUrl} />
                 </Avatar>
-                <p className="text-sm">{booking?.service.name}</p>
+                <p className="text-sm">{booking.service.name}</p>
               </div>
             </div>
             <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
@@ -123,16 +123,16 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
             <CardContent className="flex items-center gap-3 px-5 py-3">
               <Avatar>
                 <AvatarImage
-                  src={booking?.service.barbershop.imageUrl}
-                  alt={booking?.service.barbershop.name}
-                  title={booking?.service.barbershop.name}
+                  src={booking.service.barbershop.imageUrl}
+                  alt={booking.service.barbershop.name}
+                  title={booking.service.barbershop.name}
                 />
               </Avatar>
               <div className="text-center">
                 <h3 className="font-bold text-sm">
-                  {booking?.service.barbershop.name}
+                  {booking.service.barbershop.name}
                 </h3>
-                <p className="text-xs">{booking?.service.barbershop.address}</p>
+                <p className="text-xs">{booking.service.barbershop.address}</p>
               </div>
             </CardContent>
           </Card>
@@ -146,31 +146,15 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
             {isConfirmed ? 'Confirmado' : 'Finalizado'}
           </Badge>
 
-          <Card className="mt-3 mb-6">
-            <CardContent className="space-y-3 p-3">
-              <div className="flex items-center justify-between">
-                <h2 className="font-bold">{booking?.service.name}</h2>
-                <p className="font-bold text-sm">{price}</p>
-              </div>
+          <div className="mt-6 mb-3">
+            <BookingSummary
+              barbershop={booking.service.barbershop}
+              service={booking.service}
+              selectedDay={booking.date}
+            />
+          </div>
 
-              <div className="flex items-center justify-between">
-                <h2 className="text-gray-400 text-sm">Data</h2>
-                <p className="text-sm">{formattedDay}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-gray-400 text-sm">Horário</h2>
-                <p className="text-sm">{hour}h</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <h2 className="text-gray-400 text-sm">Barbearia</h2>
-                <p className="text-sm">{booking?.service.barbershop.name}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {booking?.service.barbershop.phones.map((phone, index) => {
+          {booking.service.barbershop.phones.map((phone, index) => {
             return <PhoneItem key={String(index)} phone={phone} />
           })}
         </div>
@@ -188,7 +172,7 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  disabled={!isConfirmed}
+                  disabled={isConfirmed}
                 >
                   Cancelar reserva
                 </Button>
@@ -196,10 +180,10 @@ export const BookingItem = ({ booking }: IBookingItemProps) => {
               <AlertDialogContent className="w-[90%]">
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    Você quer mesmo cancelar sua reserva ?
+                    Você quer mesmo cancelar sua reserva
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Tem certeza que deseja realizar o cancelamento ? Essa ação é
+                    Tem certeza que deseja realizar o cancelamento Essa ação é
                     irreversível.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
