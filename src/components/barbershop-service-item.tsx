@@ -12,6 +12,7 @@ import { ptBR } from 'date-fns/locale'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { BookingSummary } from './booking-summary'
@@ -40,6 +41,7 @@ export const BarbershopServiceItem = ({
   barbershop,
 }: IBarbershopItemProps) => {
   const { data, status } = useSession()
+  const router = useRouter()
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined)
   const [selectedHour, setSelectedHour] = useState<string | undefined>(
     undefined,
@@ -97,7 +99,12 @@ export const BarbershopServiceItem = ({
       queryClient.invalidateQueries({ queryKey: ['get-bookings'] })
       setSelectedDay(undefined)
       setSelectedHour(undefined)
-      toast.success('Reserva criada com sucesso')
+      toast.success('Reserva criada com sucesso', {
+        action: {
+          label: 'Ver agendamento',
+          onClick: () => router.push('/bookings'),
+        },
+      })
     } catch (error) {
       console.log('ERROR: ', error)
       toast.error('Erro ao tentar criar reserva')
