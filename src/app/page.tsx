@@ -43,7 +43,7 @@ const Home = async () => {
           <Search />
         </div>
 
-        <div className="scrollbar-hidden mt-6 flex gap-3 overflow-auto">
+        <div className="scrollbar-hidden mt-6 flex gap-3 overflow-auto lg:items-center lg:justify-center">
           {quickSearchOptions.map(option => {
             return <QuickSearch option={option} key={option.title} />
           })}
@@ -62,7 +62,7 @@ const Home = async () => {
           <>
             <Subtitle>Agendamentos</Subtitle>
 
-            <div className="scrollbar-hidden flex gap-4 overflow-x-auto">
+            <div className="scrollbar-hidden flex gap-4 overflow-x-auto lg:grid lg:grid-cols-3 lg:gap-3">
               {bookings.map(booking => {
                 return (
                   <BookingItem

@@ -83,24 +83,28 @@ const Barbershop = async ({ params }: IBarbershopProps) => {
         <p className="text-justify text-sm">{barbershop.description}</p>
       </div>
 
-      <div className="flex flex-col space-y-3 border-b border-solid p-5">
+      <div className="p-5">
         <Subtitle>Serviços</Subtitle>
-        {barbershop.services.map(service => {
-          return (
-            <BarbershopServiceItem
-              key={service.id}
-              service={JSON.parse(JSON.stringify(service))}
-              barbershop={barbershop}
-            />
-          )
-        })}
+        <div className="flex flex-col space-y-3 border-b border-solid lg:grid lg:grid-cols-3 lg:gap-3">
+          {barbershop.services.map(service => {
+            return (
+              <BarbershopServiceItem
+                key={service.id}
+                service={JSON.parse(JSON.stringify(service))}
+                barbershop={barbershop}
+              />
+            )
+          })}
+        </div>
       </div>
 
-      <div className="space-y-3 p-5">
+      <div className="p-5">
         <Subtitle>Contato</Subtitle>
-        {barbershop.phones.map((phone, index) => {
-          return <PhoneItem key={String(index)} phone={phone} />
-        })}
+        <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3 lg:gap-4">
+          {barbershop.phones.map((phone, index) => {
+            return <PhoneItem key={String(index)} phone={phone} />
+          })}
+        </div>
       </div>
     </>
   )
