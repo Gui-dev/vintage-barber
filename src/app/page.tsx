@@ -11,6 +11,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { getServerSession } from 'next-auth'
 import Image from 'next/image'
+import { getConfirmedBookings } from './data/get-confirmed-bookings'
 
 const Home = async () => {
   const data = await getServerSession(authOptions)
@@ -20,26 +21,8 @@ const Home = async () => {
       name: 'desc',
     },
   })
-  const bookings = data?.user
-    ? await prisma.booking.findMany({
-        where: {
-          userId: data.user.id,
-          date: {
-            gte: new Date(),
-          },
-        },
-        include: {
-          service: {
-            include: {
-              barbershop: true,
-            },
-          },
-        },
-        orderBy: {
-          date: 'asc',
-        },
-      })
-    : []
+  const bookings = await getConfirmedBookings()
+
   const today = format(new Date(), "EEEE', 'dd' de 'MMMM", {
     locale: ptBR,
   })
